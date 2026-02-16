@@ -4,12 +4,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    
+    <script>
+      // This script overrides the Rhino materials once the model is loaded
+      AFRAME.registerComponent('force-material', {
+        init: function () {
+          this.el.addEventListener('model-loaded', () => {
+            const mesh = this.el.getObject3D('mesh');
+            mesh.traverse((node) => {
+              if (node.isMesh) {
+                node.material.color.set('#FFC0CB'); // Pink
+                node.material.transparent = true;
+                node.material.opacity = 0.8; // 80% visibility
+                node.material.needsUpdate = true;
+              }
+            });
+          });
+        }
+      });
+    </script>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
 
     <a-scene 
-      mindar-image="imageTargetSrc: ./targets/targets.mind; maxTrack: 2; filterMinCF: 0.001; filterBeta: 10" 
+      mindar-image="imageTargetSrc: ./targets/targets.mind; filterMinCF: 0.001; filterBeta: 10" 
       color-space="sRGB" 
       renderer="colorManagement: true, physicallyCorrectLights" 
       vr-mode-ui="enabled: false" 
@@ -17,23 +36,24 @@
       
       <a-assets>
         <a-asset-item id="stairsModel" src="./assets/stairs.glb"></a-asset-item>
-        <a-asset-item id="coneModel" src="./assets/cone.glb"></a-asset-item>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-entity position="0 0 -2.16">
-          <a-gltf-model src="#coneModel" rotation="90 0 0" scale="5.55 5.55 5.55"></a-gltf-model>
-        </a-entity>
-      </a-entity>
-
-      <a-entity mindar-image-target="targetIndex: 1">
-        <a-entity position="0 0 -2.16">
-          <a-gltf-model src="#stairsModel" rotation="90 0 0" scale="5.55 5.55 5.55"></a-gltf-model>
+        <a-entity position="0 0 0">
+          <a-gltf-model 
+            src="#stairsModel" 
+            rotation="90 0 0" 
+            scale="8.33 8.33 8.33"
+            force-material> </a-gltf-model>
         </a-entity>
       </a-entity>
 
     </a-scene>
   </body>
 </html>
+  </body>
+</html>
+
+
